@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+namespace common{
 namespace io{
 
 class Writer{
@@ -97,6 +98,7 @@ class ReadWriteSeekCloser:
 	public Seeker,
 	public Closer {};
 
+}
 }
 
 #endif

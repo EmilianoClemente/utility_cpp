@@ -3,6 +3,7 @@
 
 #include "io.h"
 
+namespace common{
 namespace io{
 
 class MemoryReader : public ReadSeeker{
@@ -30,6 +31,7 @@ class MemoryWriter : public WriteSeeker{
 		unsigned char* const end_;
 };
 
+};
 };
 
 #endif

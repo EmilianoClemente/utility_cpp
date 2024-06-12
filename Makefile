@@ -1,7 +1,7 @@
 all:
 
 test:
-	g++ -o  ByteIo.out -DEXECUTE_TEST ByteIo.cpp
-	./ByteIo.out
-	g++ -o  MemoryIo.out -DEXECUTE_TEST MemoryIo.cpp
-	./MemoryIo.out
+	g++ -o  MemoryIoTest.out MemoryIo.cpp MemoryIoTest.cpp
+	./MemoryIoTest.out
+	g++ -o rleTest.out rle.cpp rle_test.cpp
+	./rleTest.out
