@@ -10,20 +10,39 @@ int main(){
 
     const char answer[] = "TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlzIHNpbmd1bGFyIHBhc3Npb24gZnJvbSBvdGhlciBhbmltYWxzLCB3aGljaCBpcyBhIGx1c3Qgb2YgdGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdlLCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=";
 
-    char out[sizeof(text) * 4 / 3];
+    {
+        char out[sizeof(text) * 4 / 3];
 
-    io::MemoryReader r(text, sizeof(text)-1);
-    io::MemoryWriter w(out, sizeof(out));
+        io::MemoryReader r(text, sizeof(text)-1);
+        io::MemoryWriter w(out, sizeof(out));
 
-    int result = base64::Encode(&r, &w);
+        int result = base64::Encode(&r, &w);
 
-    out[w.Written()] = 0;
-    if(memcmp(answer, out, sizeof(answer)) != 0){
-        printf("encode test fail\n");
-        return -1;
+        out[w.Written()] = 0;
+        if(memcmp(answer, out, sizeof(answer)) != 0){
+            printf("encode test fail\n");
+            return -1;
+        }
+
+        printf("base64 encode test ok\n");
     }
 
-    printf("base64 test ok\n");
+    {
+        char out[sizeof(text) + 1];
+        io::MemoryReader r(answer, sizeof(answer));
+        io::MemoryWriter w(out, sizeof(out));
+
+        memset(out, 0, sizeof(out));
+
+        int result = base64::Decode(&r, &w);
+        printf("%s\n", out);
+        if(memcmp(answer, out, sizeof(answer)) != 0){
+            printf("decode test fail\n");
+            return -1;
+        }
+
+        printf("base64 decode test ok\n");
+    }
 
     return 0;
 }
