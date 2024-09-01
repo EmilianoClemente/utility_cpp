@@ -200,3 +200,171 @@ int main(){
 }
 
 """
+
+"""
+#ifndef COMMON_LLIST_H
+#define COMMON_LLIST_H
+
+// #ifndef LLIST_H
+// #define LLIST_H
+// 
+// typedef void node_proc_fun_t(void*);
+// typedef int node_comp_fun_t(const void*, const void*);
+// 
+// typedef void LLIST_T;
+// 
+// LLIST_T *llist_new(int elmsize);
+// int llist_delete(LLIST_T *ptr);
+//  
+// int llist_node_append(LLIST_T *ptr, const void *datap);
+// int llist_node_prepend(LLIST_T *ptr, const void *datap);
+// 
+// int llist_travel(LLIST_T *ptr, node_proc_fun_t *proc);
+//  
+// void llist_node_delete(LLIST_T *ptr, node_comp_fun_t *comp, const void *key); 
+// void *llist_node_find(LLIST_T *ptr, node_comp_fun_t *comp, const void *key);
+// 
+// #endif
+
+namespace common{
+
+template<typename T>
+class List{
+	public:
+		struct Node{
+			Node* next;
+			T	  data;
+		};
+
+		class NodeAllocator{
+			protected:
+				~NodeAllocator(){};
+			public:
+				virtual Node* New()=0;
+		};
+
+		List(NodeAllocator* allocator) : allocator_(allocator){}
+		class NodeSelector{
+			protected:
+				~NodeSelector(){}
+			public:
+				virtual bool Select(T data)=0;
+		};
+
+		class Walker{
+			protected:
+				~Walker(){}
+			public:
+				virtual void Walk(T data)=0;
+		};
+
+		int Append(T data){
+			Node* new_node = allocator_->New();
+
+			if(!new_node){
+				return -1;
+			}
+
+			new_node->data = data;
+			new_node->next = head_;
+			head_ = new_node;
+
+			return 0;
+		}
+
+		int AppendBefore(T data, NodeSelector* selector){
+			Node** slot = find(selector);
+
+			if(!slot){
+				// TODO error code
+				return -1;
+			}
+
+			Node* new_node = allocator_->New();
+			if(!new_node){
+				// TODO error code
+				return -1;
+			}
+
+			new_node->data = data;
+
+			new_node->next = *slot;
+			*slot = new_node;
+
+			return 0;
+		}
+
+		int AppendAfter(T data, NodeSelector* selector){
+			Node** slot = find(selector);
+
+			if(!slot){
+				// TODO error code
+				return -1;
+			}
+
+			if(*slot == 0){
+				// TODO error code
+				return -1;
+			}
+
+			Node* new_node = allocator_->New();
+
+			if(!new_node){
+				// TODO error code
+				return -1;
+			}
+
+			new_node->next = (*slot)->next;
+			(*slot)->next = new_node;
+
+			return 0;
+		}
+
+		int Remove(NodeSelector* selector){
+			Node** slot = find(selector);
+			if(!slot){
+				return -1;
+			}
+
+			if(*slot == 0){
+				return -1;
+			}
+
+			*slot = (*slot)->next;
+
+			return 0;
+		}
+
+		int Walk(Walker* walker){
+			Node* view = head_;
+			while(view != 0){
+				walker->Walk(view->data);
+				view = view->next;
+			}
+
+			return 0;
+		}
+	private:
+		Node* head_;
+		NodeAllocator* allocator_;
+
+		Node** find(NodeSelector* selector){
+			Node** indirect = &head_;
+
+			while(*indirect != 0){
+				if(selector->Select((*indirect)->data)){
+					return indirect;
+				}
+
+				indirect = &((*indirect)->next);
+			}
+
+			return 0;
+		}
+};
+
+}
+
+#endif
+
+"""
